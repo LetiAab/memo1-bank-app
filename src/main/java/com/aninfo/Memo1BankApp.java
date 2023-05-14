@@ -89,13 +89,7 @@ public class Memo1BankApp {
 		if (!accountOptional.isPresent()) {
 			throw new InvalidTransactionTypeException("Cbu provided does not exist");
 		}
-		if(Objects.equals(transactionType, "deposit")){
-			accountService.deposit(cbu, sum);
-		}
 
-		if(Objects.equals(transactionType, "withdraw")){
-			accountService.withdraw(cbu, sum);
-		}
 		return transactionService.createTransaction(transaction, transactionType, cbu, sum);
 	}
 
