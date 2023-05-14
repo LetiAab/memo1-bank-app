@@ -1,7 +1,10 @@
 package com.aninfo;
 
+import com.aninfo.exceptions.InvalidTransactionTypeException;
 import com.aninfo.model.Account;
+import com.aninfo.model.Transaction;
 import com.aninfo.service.AccountService;
+import com.aninfo.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -23,6 +27,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @SpringBootApplication
 @EnableSwagger2
 public class Memo1BankApp {
+	@Autowired
+	private TransactionService transactionService;
 
 	@Autowired
 	private AccountService accountService;
@@ -73,6 +79,41 @@ public class Memo1BankApp {
 	@PutMapping("/accounts/{cbu}/deposit")
 	public Account deposit(@PathVariable Long cbu, @RequestParam Double sum) {
 		return accountService.deposit(cbu, sum);
+	}
+
+	@PostMapping("/accounts/{cbu}/transactions")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Transaction createTransaction(@RequestBody Transaction transaction, @RequestParam String transactionType, @PathVariable Long cbu, @RequestParam Double sum) {
+		Optional<Account> accountOptional = accountService.findById(cbu);
+
+		if (!accountOptional.isPresent()) {
+			throw new InvalidTransactionTypeException("Cbu provided does not exist");
+		}
+		if(Objects.equals(transactionType, "deposit")){
+			accountService.deposit(cbu, sum);
+		}
+
+		if(Objects.equals(transactionType, "withdraw")){
+			accountService.withdraw(cbu, sum);
+		}
+		return transactionService.createTransaction(transaction, transactionType, cbu, sum);
+	}
+
+	@GetMapping("/accounts/{cbu}/transactions")
+	public ResponseEntity<Transaction> getTransaction(@PathVariable Long numero) {
+		Optional<Transaction> transaction = transactionService.findById(numero);
+		return ResponseEntity.of(transaction);
+	}
+
+	@GetMapping("/transactions/{cbu}")
+	public Collection<Transaction> getTransactions(Long cbu) {
+
+		return transactionService.getAccounts(cbu);
+	}
+
+	@DeleteMapping("/accounts/{cbu}/transactions")
+	public void deleteTransaction(@PathVariable Long numero) {
+		transactionService.deleteById(numero);
 	}
 
 	@Bean
