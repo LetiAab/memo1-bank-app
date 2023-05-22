@@ -38,7 +38,7 @@ public class AccountOperationsTest extends AccountIntegrationServiceTest {
         }
     }
 
-    @When("^Trying to deposit (\\d+)$")
+    @When("^Trying to deposit (.*)$")
     public void trying_to_deposit(int sum) {
         try {
             account = deposit(account, Double.valueOf(sum));
