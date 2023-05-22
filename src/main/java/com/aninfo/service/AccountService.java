@@ -19,8 +19,7 @@ public class AccountService {
 
     @Autowired
     private AccountRepository accountRepository;
-    @Autowired
-    private TransactionRepository transactionRepository;
+
 
     public Account createAccount(Account account) {
         return accountRepository.save(account);
@@ -37,19 +36,6 @@ public class AccountService {
     public void save(Account account) {
         accountRepository.save(account);
     }
-    public void addTransaction(Transaction transaction, String transactionType,Long cbu, Double sum) {
-        if(Objects.equals(transactionType, "deposit")){
-            this.deposit(cbu, sum);
-        }
-
-        if(Objects.equals(transactionType, "withdraw")){
-            this.withdraw(cbu, sum);
-        }
-        transactionRepository.save(transaction);
-    }
-    public Collection<Transaction> getTransactions() {
-        return transactionRepository.findAll();
-    }
 
     public void deleteById(Long cbu) {
         accountRepository.deleteById(cbu);
@@ -65,7 +51,6 @@ public class AccountService {
 
         account.setBalance(account.getBalance() - sum);
         accountRepository.save(account);
-
         return account;
     }
 
@@ -77,10 +62,22 @@ public class AccountService {
         }
 
         Account account = accountRepository.findAccountByCbu(cbu);
-        account.setBalance(account.getBalance() + sum);
+        account.setBalance(account.getBalance() + this.calculatePromo(sum));
         accountRepository.save(account);
 
         return account;
+    }
+
+    private double calculatePromo(Double sum){
+        Double extra = (sum * 0.1);
+
+        if (sum >= 2000 && extra <= 500){
+            sum = sum + extra;
+
+        } else if (extra > 500) {
+            sum = sum + 500;
+        }
+        return sum;
     }
 
 }

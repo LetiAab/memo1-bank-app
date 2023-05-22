@@ -15,8 +15,6 @@ public class Account {
 
     private Double balance;
 
-    private ArrayList<Transaction> transactions = new ArrayList<Transaction>();
-
     public Account(){
     }
 
@@ -40,11 +38,4 @@ public class Account {
         this.balance = balance;
     }
 
-    public void addTransaction(Transaction transaction) {
-        transactions.add(transaction);
-    }
-
-    public ArrayList<Transaction> getTransactions() {
-        return transactions;
-    }
 }

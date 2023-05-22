@@ -81,19 +81,15 @@ public class Memo1BankApp {
 		return accountService.deposit(cbu, sum);
 	}
 
-	@PostMapping("/accounts/{cbu}/transactions")
+
+	@PostMapping("/transactions")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Transaction createTransaction(@RequestBody Transaction transaction, @RequestParam String transactionType, @PathVariable Long cbu, @RequestParam Double sum) {
-		Optional<Account> accountOptional = accountService.findById(cbu);
-
-		if (!accountOptional.isPresent()) {
-			throw new InvalidTransactionTypeException("Cbu provided does not exist");
-		}
-
-		return transactionService.createTransaction(transaction, transactionType, cbu, sum);
+	public Transaction createTransaction(@RequestBody Transaction transaction) {
+		return transactionService.createTransaction(transaction, accountService);
 	}
 
-	@GetMapping("/accounts/{cbu}/transactions")
+
+	@GetMapping("/transaction/{numero}")
 	public ResponseEntity<Transaction> getTransaction(@PathVariable Long numero) {
 		Optional<Transaction> transaction = transactionService.findById(numero);
 		return ResponseEntity.of(transaction);
@@ -101,11 +97,10 @@ public class Memo1BankApp {
 
 	@GetMapping("/transactions/{cbu}")
 	public Collection<Transaction> getTransactions(Long cbu) {
-
-		return transactionService.getAccounts(cbu);
+		return transactionService.getTransactions(cbu);
 	}
 
-	@DeleteMapping("/accounts/{cbu}/transactions")
+	@DeleteMapping("/transactions/{numero}")
 	public void deleteTransaction(@PathVariable Long numero) {
 		transactionService.deleteById(numero);
 	}

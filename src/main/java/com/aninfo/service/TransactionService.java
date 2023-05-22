@@ -1,4 +1,7 @@
 package com.aninfo.service;
+import com.aninfo.exceptions.InvalidCbuException;
+import com.aninfo.exceptions.InvalidTransactionTypeException;
+import com.aninfo.model.Account;
 import com.aninfo.model.Transaction;
 import com.aninfo.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -13,15 +17,21 @@ public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
 
-    @Autowired
-    private AccountService accountService;
+    public Transaction createTransaction(Transaction transaction, AccountService accountService) {
+        Optional<Account> accountOptional = accountService.findById(transaction.getCbuAccount());
 
-    public Transaction createTransaction(Transaction transaction, String transactionType, Long cbu, Double sum) {
-        transaction.setType(transactionType);
-        transaction.setCbuAccount(cbu);
-        transaction.setSum(sum);
+        if (!accountOptional.isPresent()) {
+            throw new InvalidCbuException("Cbu provided does not exist");
+        }
 
-        accountService.addTransaction(transaction, transactionType, cbu, sum);
+        if(Objects.equals(transaction.getType(), "deposit")){
+            accountService.deposit(transaction.getCbuAccount(), transaction.getSum());
+        } else if(Objects.equals(transaction.getType(), "withdraw")){
+            accountService.withdraw(transaction.getCbuAccount(), transaction.getSum());
+        } else {
+            throw new InvalidTransactionTypeException("Invalid transaction type");
+        }
+
         return transactionRepository.save(transaction);
     }
 
@@ -32,8 +42,7 @@ public class TransactionService {
     public Optional<Transaction> findById(Long numero) { return transactionRepository.findById(numero);
     }
 
-    public Collection<Transaction> getAccounts(Long cbu) {
+    public Collection<Transaction> getTransactions(Long cbu) {
         return transactionRepository.findAllByCbuAccount(cbu);
-
     }
 }
