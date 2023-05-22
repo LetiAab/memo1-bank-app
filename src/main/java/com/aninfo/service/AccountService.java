@@ -20,7 +20,6 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-
     public Account createAccount(Account account) {
         return accountRepository.save(account);
     }
@@ -56,7 +55,6 @@ public class AccountService {
 
     @Transactional
     public Account deposit(Long cbu, Double sum) {
-
         if (sum <= 0) {
             throw new DepositNegativeSumException("Cannot deposit negative sums");
         }

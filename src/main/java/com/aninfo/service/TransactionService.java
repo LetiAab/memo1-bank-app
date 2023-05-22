@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -16,6 +15,8 @@ import java.util.Optional;
 public class TransactionService {
     @Autowired
     private TransactionRepository transactionRepository;
+    private String depositType = "deposit";
+    private String withdrawType = "withdraw";
 
     public Transaction createTransaction(Transaction transaction, AccountService accountService) {
         Optional<Account> accountOptional = accountService.findById(transaction.getCbuAccount());
@@ -24,10 +25,12 @@ public class TransactionService {
             throw new InvalidCbuException("Cbu provided does not exist");
         }
 
-        if(Objects.equals(transaction.getType(), "deposit")){
+        if(Objects.equals(transaction.getType(), depositType)){
             accountService.deposit(transaction.getCbuAccount(), transaction.getSum());
-        } else if(Objects.equals(transaction.getType(), "withdraw")){
+
+        } else if(Objects.equals(transaction.getType(), withdrawType)){
             accountService.withdraw(transaction.getCbuAccount(), transaction.getSum());
+
         } else {
             throw new InvalidTransactionTypeException("Invalid transaction type");
         }
@@ -39,10 +42,10 @@ public class TransactionService {
         transactionRepository.deleteById(numero);
     }
 
-    public Optional<Transaction> findById(Long numero) { return transactionRepository.findById(numero);
-    }
+    public Optional<Transaction> findById(Long numero) { return transactionRepository.findById(numero);}
 
     public Collection<Transaction> getTransactions(Long cbu) {
         return transactionRepository.findAllByCbuAccount(cbu);
     }
+
 }

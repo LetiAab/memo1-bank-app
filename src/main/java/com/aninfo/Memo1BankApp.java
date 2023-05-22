@@ -29,7 +29,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class Memo1BankApp {
 	@Autowired
 	private TransactionService transactionService;
-
 	@Autowired
 	private AccountService accountService;
 
@@ -81,13 +80,11 @@ public class Memo1BankApp {
 		return accountService.deposit(cbu, sum);
 	}
 
-
 	@PostMapping("/transactions")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createTransaction(@RequestBody Transaction transaction) {
 		return transactionService.createTransaction(transaction, accountService);
 	}
-
 
 	@GetMapping("/transaction/{numero}")
 	public ResponseEntity<Transaction> getTransaction(@PathVariable Long numero) {

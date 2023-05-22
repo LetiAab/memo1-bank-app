@@ -7,7 +7,6 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long numero;
-
     private Long cbuAccount;
     private Double sum;
     private String type;
@@ -22,10 +21,7 @@ public class Transaction {
     public Long getCbuAccount(){
         return cbuAccount;
     }
-    public String getType(){
-        return type;
-    }
-
+    public String getType(){ return type; }
     public Double getSum(){
         return sum;
     }
